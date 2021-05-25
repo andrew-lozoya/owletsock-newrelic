@@ -1,0 +1,558 @@
+{
+  "name": "Baby Board",
+  "description": null,
+  "permissions": "PUBLIC_READ_WRITE",
+  "pages": [
+    {
+      "name": "Baby Board share",
+      "description": null,
+      "widgets": [
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "height": 1,
+            "width": 12
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "# ![](https://i.ibb.co/G77Zsfr/2021-05-23-21-36-11.png) Baby board!"
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 2,
+            "height": 3,
+            "width": 2
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "![Owlet](https://i.ibb.co/fpB2DP6/2021-05-22-13-45-30.png)"
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 3,
+            "row": 2,
+            "height": 1,
+            "width": 5
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "# ![Sleep](https://i.ibb.co/bPXFRph/night-mode.png) Light Sleep"
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.table"
+          },
+          "layout": {
+            "column": 8,
+            "row": 2,
+            "height": 6,
+            "width": 5
+          },
+          "title": "alertable events",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "FROM LOW_INTEG_READ, LOW_BATT_ALRT, HIGH_HR_ALRT, LOW_HR_ALRT, LOW_OX_ALRT, SOCK_DISCON_ALRT, RED_ALERT_SUMMARY  SELECT latest(timestamp), count(*) SINCE '2021\\05\\23' FACET description, value, dsn "
+              }
+            ]
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 3,
+            "row": 3,
+            "height": 2,
+            "width": 3
+          },
+          "title": "movements per minute",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "FROM Metric SELECT rate(count(movement), 1 minute) AS 'Movements per minute' WHERE active IS TRUE AND movement != 0 FACET dsn SINCE 1 day ago TIMESERIES MAX "
+              }
+            ]
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.heatmap"
+          },
+          "layout": {
+            "column": 6,
+            "row": 3,
+            "height": 2,
+            "width": 2
+          },
+          "title": "7 day restless hours heatmap",
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "SELECT histogram(timestamp, buckets: 1, width: 1) AS movementCount FROM Metric  WHERE active IS TRUE AND movement != 0 LIMIT 6 SINCE 7 days ago FACET hourOf(timestamp) WITH TIMEZONE 'America/Chicago'"
+              }
+            ]
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "height": 3,
+            "width": 2
+          },
+          "title": "OEM Sock Version",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "FROM SOCK_VERSION SELECT latest(dsn) AS 'DNS', latest(app) AS 'App Version', latest(bl) AS 'Bluetooth Firmware', latest(rev) AS 'Hardware Rev.' SINCE 12 months ago"
+              }
+            ],
+            "thresholds": []
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 3,
+            "row": 5,
+            "height": 1,
+            "width": 5
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "# ![Oxygen Saturation](https://i.ibb.co/2NW7wpX/lungs.png) Oxygen Saturation"
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 3,
+            "row": 6,
+            "height": 2,
+            "width": 3
+          },
+          "title": "SpO2 %",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "FROM Metric SELECT clamp_max(average(oxygen_saturation), 100) AS 'O2' WHERE active IS True FACET dsn TIMESERIES MAX SINCE 1 day ago"
+              }
+            ]
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 6,
+            "row": 6,
+            "height": 2,
+            "width": 2
+          },
+          "title": "average SpO2 %",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "FROM Metric SELECT clamp_max(average(oxygen_saturation), 100) AS 'SpO2 %' SINCE 1 minutes ago COMPARE WITH 5 minutes ago"
+              }
+            ],
+            "thresholds": []
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 8,
+            "height": 1,
+            "width": 2
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "# ![Base Station](https://i.ibb.co/pzs1J8c/base.png) Base Station"
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 3,
+            "row": 8,
+            "height": 1,
+            "width": 5
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "# ![bpm](https://i.ibb.co/T28ZtPh/heart.png) Beats Per Minute"
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 8,
+            "row": 8,
+            "height": 1,
+            "width": 5
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "# ![BLE RSSI](https://i.ibb.co/qFPNPsk/bluetooth.png) ble rssi"
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "height": 2,
+            "width": 2
+          },
+          "title": "active base stations",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "FROM Metric SELECT latest(base_station_on) WHERE state = 'Connected' SINCE 1 minute ago FACET  dsn "
+              }
+            ]
+          },
+          "linkedEntityGuids": [
+            "MjA3NTU1N3xWSVp8REFTSEJPQVJEfDIwMTA3OTE"
+          ]
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 3,
+            "row": 9,
+            "height": 2,
+            "width": 3
+          },
+          "title": "bpm",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "FROM Metric SELECT clamp_max(average(heart_rate), 255) AS 'bpm' WHERE active IS True FACET dsn TIMESERIES MAX SINCE 1 day ago"
+              }
+            ]
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 6,
+            "row": 9,
+            "height": 2,
+            "width": 2
+          },
+          "title": "average bpm",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "FROM Metric SELECT clamp_max(average(heart_rate), 255) AS 'bpm' SINCE 1 minute ago COMPARE WITH 5 minutes ago"
+              }
+            ],
+            "thresholds": []
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 8,
+            "row": 9,
+            "height": 2,
+            "width": 3
+          },
+          "title": "RSSI",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "FROM Metric SELECT average(ble_rssi) AS 'dBm' FACET dsn SINCE 1 day ago TIMESERIES MAX "
+              }
+            ]
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 11,
+            "row": 9,
+            "height": 2,
+            "width": 2
+          },
+          "title": "BLE dBm",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "SELECT latest(ble_rssi) FROM Metric SINCE 1 minute ago FACET state"
+              }
+            ],
+            "thresholds": []
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 1,
+            "row": 11,
+            "height": 1,
+            "width": 2
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "# ![](https://i.ibb.co/Sf5NqjW/IMG-1847.png) Owlet Smart Sock 3"
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 3,
+            "row": 11,
+            "height": 1,
+            "width": 5
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "# ![Battery](https://i.ibb.co/1JxZPMS/battery-loaded.png) Sock Battery"
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "layout": {
+            "column": 8,
+            "row": 11,
+            "height": 1,
+            "width": 5
+          },
+          "title": "",
+          "rawConfiguration": {
+            "text": "# ![Battery](https://i.ibb.co/xg0ptn8/battery-charge.png) Sock Battery Cycle"
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "height": 2,
+            "width": 2
+          },
+          "title": "sock in-use",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "SELECT filter(latest(connected), WHERE connected = 1) AS 'In-Use', filter(latest(connected), WHERE connected = 0) + 1 AS 'Not In-Use'  FROM (SELECT filter(latest(base_station_on or 0), WHERE state = 'Connected') AS connected FROM Metric TIMESERIES 1 minutes) TIMESERIES 1 minutes SINCE 6 hours ago"
+              }
+            ]
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 3,
+            "row": 12,
+            "height": 2,
+            "width": 3
+          },
+          "title": "battery",
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "FROM Metric SELECT clamp_max(average(battery), 100) AS 'Battery' FACET dsn TIMESERIES MAX SINCE 1 day ago"
+              }
+            ],
+            "yAxisLeft": {
+              "zero": true
+            }
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "layout": {
+            "column": 6,
+            "row": 12,
+            "height": 2,
+            "width": 2
+          },
+          "title": "% battery",
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "FROM Metric SELECT clamp_max(average(battery), 100) AS 'sock battery' SINCE 1 minute ago"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 50
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 25
+              }
+            ]
+          },
+          "linkedEntityGuids": null
+        },
+        {
+          "visualization": {
+            "id": "viz.area"
+          },
+          "layout": {
+            "column": 8,
+            "row": 12,
+            "height": 2,
+            "width": 5
+          },
+          "title": "battery lifecycle",
+          "rawConfiguration": {
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": 1234567,
+                "query": "SELECT filter(latest(chargingState),WHERE chargingState = 1) AS 'Discharging', clamp_max(filter(latest(chargingState),WHERE chargingState = 2),1) AS 'Charging', clamp_max(filter(latest(chargingState),WHERE chargingState = 3),1) AS 'Charged' FROM (SELECT latest(charge_status) + 1 AS chargingState FROM Metric TIMESERIES 1 minute) SINCE 6 hours ago TIMESERIES 1 minute"
+              }
+            ]
+          },
+          "linkedEntityGuids": null
+        }
+      ]
+    }
+  ]
+}
