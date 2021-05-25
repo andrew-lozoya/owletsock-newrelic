@@ -1,0 +1,4 @@
+DateTime==4.3
+logger==1.4
+newrelic-telemetry-sdk==0.4.2
+requests==2.25.1
