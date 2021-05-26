@@ -8,7 +8,7 @@ This project aims to demonstrates the New Relic Telemetry SDK usage for Python f
 
 The script's implementation was made possible after others first reversed engineered the android app to understand how the data is recorded and fetched. Credit for the only known login API to work goes to @mbevand for their work in https://github.com/mbevand/owlet_monitor/blob/master/owlet_monitor. This script herein has been significantly enhanced for stability logic and Sock v3 sensor properties. 
 
-The script batch sends metrics every 10 seconds in New Relic metric format. All credentials including `NEW_RELIC_INSERT_KEY OWLET_USER`, `OWLET_PASS`, and `OWLET_REGION` must be passed via environment variables. Log messages are printed on stdout in INFO level fasion.
+The script batch sends metrics and events when conditions are met every 10 seconds to New Relic. All credentials including `NEW_RELIC_INSERT_KEY OWLET_USER`, `OWLET_PASS`, and `OWLET_REGION` must be passed via environment variables. Log messages are printed to disk in INFO level fasion.
 
 
 Technical details
