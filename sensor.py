@@ -314,7 +314,7 @@ def Initialize():
 
     for DSN in SockDSN:
         Sock.append(OwletSmartSock(DSN, Owlet))
-    
+
     while True:
         try:
             for Sock in Sock:
