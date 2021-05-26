@@ -305,16 +305,19 @@ def Initialize():
         return
 
     SockDSN = []
+    Sock = []
 
     for SmartSockDSN in Owlet.devices:
         _LOGGER.info("Adding Owlet Smart Sock %s" % SmartSockDSN)
         OwletSmartSock(SmartSockDSN, Owlet).version()
         SockDSN.append(SmartSockDSN)
 
+    for DSN in SockDSN:
+        Sock.append(OwletSmartSock(DSN, Owlet))
+    
     while True:
         try:
-            for DSN in SockDSN:
-                Sock = OwletSmartSock(DSN, Owlet)
+            for Sock in Sock:
                 Sock.update()
             time.sleep(10)
         except:
@@ -363,7 +366,7 @@ class OwletSmartSock:
         }
 
     def _setup_state(self):
-        self.__state = "disconnected"
+        self.__state = "Connnected"
 
     def _setup_attributes(self):
         self.__attributes = {
