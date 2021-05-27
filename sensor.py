@@ -58,13 +58,12 @@ class OwletAPI:
         self.__API_URL = self.__OWLET_REGION_CONFIG[self.__OWLET_REGION]["url_base"]
         self.__OWLET_TOKEN_EXPIRE_TIME = None
         self.__OWLET_TOKEN_REAUTH_ATTEMPTS = 0
-        self.__OWLET_TOKEN_REAUTH_MAX_ATTEMPTS = 5
+        self.__OWLET_TOKEN_REAUTH_MAX_ATTEMPTS = 10
         self.__OWLET_TOKEN = ""
         self.__devices = None
         self.__token = None
 
-    def authenticate(self, reauthenticate=False):
-        _LOGGER.info("Logging into Owlet API via Firebase as %s" % self.__OWLET_USER)
+    def authenticate(self, reauthenticate=False, check=False):
         # authenticate against Firebase, get the JWT.
         # need to pass the X-Android-Package and X-Android-Cert headers because
         # the API key is restricted to the Owlet Android app
@@ -74,17 +73,24 @@ class OwletAPI:
                 self.__OWLET_TOKEN_REAUTH_ATTEMPTS
                 <= self.__OWLET_TOKEN_REAUTH_MAX_ATTEMPTS
             ):
-                _LOGGER.info(
-                    "Reauthticate Attempt: %s" % self.__OWLET_TOKEN_REAUTH_ATTEMPTS
-                )
                 self.__OWLET_TOKEN_REAUTH_ATTEMPTS = (
                     self.__OWLET_TOKEN_REAUTH_ATTEMPTS + 1
                 )
-                self.__OWLET_TOKEN_REAUTH_RESET_TIMER = time.time() + 1800
-            elif time.time() >= self.__OWLET_TOKEN_REAUTH_RESET_TIMER:
+                _LOGGER.info(
+                    "Reauthticate Attempt: %s" % self.__OWLET_TOKEN_REAUTH_ATTEMPTS
+                )
+            else:
+                return self.__OWLET_TOKEN, None
+
+        if check:
+            _LOGGER.info(time.time() + 1800)
+            if time.time() + 1800 >= self.__OWLET_TOKEN_EXPIRE_TIME:
                 self.__OWLET_TOKEN_REAUTH_ATTEMPTS = 1
             else:
                 return self.__OWLET_TOKEN, None
+
+        _LOGGER.info("Logging into Owlet API via Firebase as %s" % self.__OWLET_USER)
+
         try:
             r = requests.post(
                 f"https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key={self.__API_KEY}",
@@ -140,7 +146,7 @@ class OwletAPI:
         self.__OWLET_TOKEN_EXPIRE_TIME = time.time() + r.json()["expires_in"] - 60
         _LOGGER.info("Owlet API Token for %s acquired" % self.__OWLET_USER)
         _LOGGER.info("Owlet API Token acquired: %s" % self.__OWLET_TOKEN)
-        self.__OWLET_TOKEN_REAUTH_MAX_ATTEMPTS = 0
+        self.__OWLET_TOKEN_REAUTH_ATTEMPTS = 1
         return self.__OWLET_TOKEN, None
 
     def api_get(self, route):
@@ -305,7 +311,7 @@ def Initialize():
         return
 
     SockDSN = []
-    Sock = []
+    SockOBJ = []
 
     for SmartSockDSN in Owlet.devices:
         _LOGGER.info("Adding Owlet Smart Sock %s" % SmartSockDSN)
@@ -313,12 +319,13 @@ def Initialize():
         SockDSN.append(SmartSockDSN)
 
     for DSN in SockDSN:
-        Sock.append(OwletSmartSock(DSN, Owlet))
+        SockOBJ.append(OwletSmartSock(DSN, Owlet))
 
     while True:
         try:
-            for Sock in Sock:
-                Sock.update()
+            for sock in SockOBJ:
+                Owlet.authenticate(False, True)
+                sock.update()
             time.sleep(10)
         except:
             _LOGGER.error("Loop broken")
